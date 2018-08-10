@@ -2,15 +2,15 @@
 #characteristics noticed in the data that can simplify it
 
 # Properties to check
-# activeInactiveFlag is always 1
-# alertDefaultIsDisabled is always 0
-# featureName is NA
-# isCurrent is 0
+# aIF is always 1
+# aDD is always 0
+# fN is NA
+# iC is 0
 
 # conclusion:
 # feautureName is always NA
-# isCurrent is always 0
-# ~0.1% of activeInactiveFlag and alertDefaultIsDisabled are different
+# iC is always 0
+# ~0.1% of aIF and aDD are different
 
 #we will create a new dataframe without those two columns
 #called dataSmartAlertFeaturesLess
@@ -19,7 +19,7 @@
 import pandas as pd 
 import math
 
-fileName = "../Avera_data/dataSmartAlert.csv"
+fileName = "alert.csv"
 
 data = pd.read_csv(fileName)
 totalPoints = 0
@@ -28,12 +28,12 @@ nonOneIndex2 = []
 index1 = 0
 index2 = 0
 
-# checking activeInactiveFlag is 1 case
-activeInactiveFlagCol = data['activeInactiveFlag']
+# checking aIF is 1 case
+aIFCol = data['aIF']
 
 isAlwaysOne = True
 count = 0
-for i in activeInactiveFlagCol:
+for i in aIFCol:
 	totalPoints+=1
 	if not(i):
 		isAlwaysOne = False
@@ -42,19 +42,19 @@ for i in activeInactiveFlagCol:
 	index1 +=1 
 
 if isAlwaysOne:
-	print("activeInactiveFlag is always 1")
+	print("aIF is always 1")
 else:
-	print("activeInactiveFlag is not always 1")
+	print("aIF is not always 1")
 	print("there are " + str(count) + " non-one instances")
 print("\n")
 
 
 
-#checking alertDefaultIsDisabled is 0 case
-alertDefaultIsDisabledCol = data['alertDefaultIsDisabled']
+#checking aDD is 0 case
+aDDCol = data['aDD']
 isAlwaysZero = True
 count = 0
-for i in alertDefaultIsDisabledCol:
+for i in aDDCol:
 	if i:
 		# print(i)
 		isAlwaysZero = False
@@ -63,9 +63,9 @@ for i in alertDefaultIsDisabledCol:
 	index2 +=1
 
 if isAlwaysZero:
-	print("alertDefaultIsDisabled is always 0")
+	print("aDD is always 0")
 else:
-	print("alertDefaultIsDisabled is not always 0")
+	print("aDD is not always 0")
 	print("there are " + str(count) + " non-zero instances")
 print("\n")
 
@@ -78,46 +78,46 @@ print("\n")
 print("second one indexes")
 print(nonOneIndex2[:25])
 
-#checking featureName is always NA
-featureNameCol = data['featureName']
+#checking fN is always NA
+fNCol = data['fN']
 isAlwaysNA = True
 count = 0
-for i in featureNameCol:
+for i in fNCol:
 	if not math.isnan(i):
 		isAlwaysNA = False
 		count+=1
 
 
 if isAlwaysNA:
-	print("featureName is always NA")
+	print("fN is always NA")
 else:
-	print("featureName is not always NA")
+	print("fN is not always NA")
 	print("there are " + str(count) + " non-zero instances")
 print("\n")
 
 
 
-#checking isCurrent is 0 case
-isCurrentCol = data['isCurrent']
+#checking iC is 0 case
+iCCol = data['iC']
 isAlwaysZero = True
 count = 0
-for i in isCurrentCol:
+for i in iCCol:
 	if i:
 		isAlwaysZero = False
 		count+=1
 
 
 if isAlwaysZero:
-	print("isCurrent is always 0")
+	print("iC is always 0")
 else:
-	print("isCurrent is not always 0")
+	print("iC is not always 0")
 	print("there are " + str(count) + " non-zero instances")
 print("\n")
 
-fileName = "../Avera_data/dataSmartAlertFeaturesLess.csv"
+fileName = "alertsFeaturesLess.csv"
 
-data.pop("featureName")
-data.pop("isCurrent")
+data.pop("fN")
+data.pop("iC")
 data.pop("Unnamed: 0")
 
 data.to_csv(fileName)

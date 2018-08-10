@@ -4,9 +4,9 @@
 
 import pandas as pd
 
-file = 'SmartAlert_extended2'
+file = 'Alert'
 
-dataFile = open('../Avera_data/data' + file + '.txt')
+dataFile = open('../data' + file + '.txt')
 
 #Make csv from the data
 firstLine = True
@@ -50,7 +50,7 @@ for line in dataFile:
 
 ## dict to dataframe, dataframe to csv
 
-csv_name = '../Avera_data/Avera_short/data' + file + '_test.csv'
+csv_name = '../data' + file + '_test.csv'
 
 dataFrameData = pd.DataFrame.from_dict(data)
 dataFrameData.to_csv(csv_name)

@@ -4,9 +4,9 @@ import numpy as np
 
 
 
-dataName = 'MAP Limit'
+dataName = 'MAP'
 
-data = '../Avera_data/Avera_analysis/' + dataName + '_only.csv'
+data =  dataName + '_only.csv'
 
 df = pd.read_csv(data, low_memory=False) #this is so we don't guess the type of the info of the column, also because it changes
 colnames = list(df)
@@ -31,26 +31,26 @@ def diffTime(startTime, endTime):
 # get the number of alerts, averageDuration, averageTimeBetweenAlerts
 def calculateAlarmInfoGeneral(keyDict):
 	print(keyDict)
-	triggerTime = keyDict['triggerTime']
-	triggerOffset = keyDict['triggerOffset']
-	reactTime = keyDict['reactionTime']
-	reactOff = keyDict['reactionOffset']
+	tTime = keyDict['tTime']
+	tOffset = keyDict['tOffset']
+	reactTime = keyDict['rTime']
+	reactOff = keyDict['rOffset']
 
-	numAlerts = len(triggerTime)
+	numAlerts = len(tTime)
 
 	if numAlerts==1:
 		print("we have a key with only 1 alert")
-		print("triggerTime: " + triggerTime[0])
+		print("tTime: " + tTime[0])
 		return 1, 0, 0, 0, 0, 0
 
-	print(triggerTime)
-	last = parseTime(triggerTime[0])
+	print(tTime)
+	last = parseTime(tTime[0])
 	timeBetweenAlerts = []
 	for i in range(1, numAlerts):
-		this = parseTime(triggerTime[i])
-		# we dont need to check that reactions are in order, cuz it doesn't matter, and trigger offsets were ordered
-		if triggerOffset[i-1] > triggerOffset[i]:
-			print("the trigger offset decreased, something is weird")
+		this = parseTime(tTime[i])
+		# we dont need to check that rs are in order, cuz it doesn't matter, and t offsets were ordered
+		if tOffset[i-1] > tOffset[i]:
+			print("the t offset decreased, something is weird")
 		timeBetweenAlerts.append(diffTime(last, this))
 		last = this
 	print("this is the time between in seconds")
@@ -69,22 +69,22 @@ def calculateAlarmInfoGeneral(keyDict):
 	return numAlerts, minTimeBetween, maxTimeBetween, q1, q2, q3
 
 
-## We assume that the data separated by unitStayKey and in chronological order
+## We assume that the data separated by uKey and in chronological order
 # Returns a dictionary with boxplot info
 def getAlarmGeneral(df):
 	endLastKey = False #the first one is a newKey
-	keySet = df['unitStayKey']
+	keySet = df['uKey']
 
 	print(keySet)
 	lastKey = 0
 	first = True
 	dataSetLength = len(keySet)
-	triggerTimeSet = df['triggerDateTime24Hr']
-	triggerOffsetSet = df['triggerDateOffset']
-	reactionTimeSet = df['reactiveDateTime24Hr']
-	reactionOffsetSet = df['reactiveDateOffset']
-	returnDict = {'unitStayKey':[], 'numberAlerts':[], 'minTimeBetween': [], 'maxTimeBetween': [], '1stQ': [], 'median':[], '3rdQ':[]}
-	keydict = {'triggerTime':[], 'triggerOffset':[], 'reactionTime':[], 'reactionOffset':[]}
+	tTimeSet = df['tDateTime24Hr']
+	tOffsetSet = df['tDateOffset']
+	rTimeSet = df['reactiveDateTime24Hr']
+	rOffsetSet = df['reactiveDateOffset']
+	returnDict = {'uKey':[], 'numberAlerts':[], 'minTimeBetween': [], 'maxTimeBetween': [], '1stQ': [], 'median':[], '3rdQ':[]}
+	keydict = {'tTime':[], 'tOffset':[], 'rTime':[], 'rOffset':[]}
 	for i in range(len(keySet)):
 
 
@@ -97,10 +97,10 @@ def getAlarmGeneral(df):
 			# print(keydict)
 			numAlerts, minTimeBw, maxTimeBw, Q1, Q2, Q3 = calculateAlarmInfoGeneral(keydict)
 			
-			#update unitStayKey
-			keyUpdate = returnDict['unitStayKey']
+			#update uKey
+			keyUpdate = returnDict['uKey']
 			keyUpdate.append(lastKey)
-			returnDict['unitStayKey'] = keyUpdate
+			returnDict['uKey'] = keyUpdate
 
 			#update numberAlerts
 			numberAlertsUpdate = returnDict['numberAlerts']
@@ -132,26 +132,26 @@ def getAlarmGeneral(df):
 
 
 			#clear the keyDict
-			keydict = {'triggerTime':[], 'triggerOffset':[], 'reactionTime':[], 'reactionOffset':[]}
+			keydict = {'tTime':[], 'tOffset':[], 'rTime':[], 'rOffset':[]}
 			endLastKey = False
 
 		#handle this key; get the information from the different sets
 		#handle this key; get the information from the different sets
-		trigTimeUpdate = keydict['triggerTime']
-		trigOffsetUpdate = keydict['triggerOffset']
-		reactTimeUpdate = keydict['reactionTime']
-		reactOffsetUpdate = keydict['reactionOffset']
+		trigTimeUpdate = keydict['tTime']
+		trigOffsetUpdate = keydict['tOffset']
+		reactTimeUpdate = keydict['rTime']
+		reactOffsetUpdate = keydict['rOffset']
 
 		#make the new lists
-		trigTimeUpdate.append(triggerTimeSet[i])
-		trigOffsetUpdate.append(triggerOffsetSet[i])
-		reactTimeUpdate.append(reactionTimeSet[i])
-		reactOffsetUpdate.append(reactionOffsetSet[i])
+		trigTimeUpdate.append(tTimeSet[i])
+		trigOffsetUpdate.append(tOffsetSet[i])
+		reactTimeUpdate.append(rTimeSet[i])
+		reactOffsetUpdate.append(rOffsetSet[i])
 
 		#update the dictionary
-		keydict['triggerTime'] = trigTimeUpdate
-		keydict['triggerOffset'] = trigOffsetUpdate
-		keydict['reactionTime'] = reactTimeUpdate
+		keydict['tTime'] = trigTimeUpdate
+		keydict['tOffset'] = trigOffsetUpdate
+		keydict['rTime'] = reactTimeUpdate
 		keydict['reationOffset'] = reactOffsetUpdate
 
 		#update everything
@@ -160,10 +160,10 @@ def getAlarmGeneral(df):
 	#add the last one
 	numAlerts, minTimeBw, maxTimeBw, Q1, Q2, Q3 = calculateAlarmInfoGeneral(keydict)
 	
-	#update unitStayKey
-	keyUpdate = returnDict['unitStayKey']
+	#update uKey
+	keyUpdate = returnDict['uKey']
 	keyUpdate.append(lastKey)
-	returnDict['unitStayKey'] = keyUpdate
+	returnDict['uKey'] = keyUpdate
 
 	#update numberAlerts
 	numberAlertsUpdate = returnDict['numberAlerts']
@@ -208,20 +208,20 @@ def convertToExcel(rawDict):
 	medianSet = rawDict['median']
 	q3Set = rawDict['3rdQ']
 	maxSet = rawDict['maxTimeBetween']
-	userSet = rawDict['unitStayKey']
+	userSet = rawDict['uKey']
 
 	boxplotDict = {}
 	usersToColumn = {}
 	numVals = len(userSet)
 	for i in range(numVals):
-		#make a new column for each unitstaykey
+		#make a new column for each ukey
 		newCol = [minSet[i], q1Set[i]-minSet[i], medianSet[i]-q1Set[i], q3Set[i]-medianSet[i], maxSet[i]-q3Set[i]]
 
 		#add column to the dictionary
 		boxplotDict[i] = newCol
 		usersToColumn[userSet[i]] = i 
 
-	csv_name = '../Avera_data/Avera_analysis/' + dataName + '_boxplots.csv'
+	csv_name = dataName + '_boxplots.csv'
 
 	analyzedDataFrame = pd.DataFrame.from_dict(boxplotDict)
 	analyzedDataFrame.to_csv(csv_name)
